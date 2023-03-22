@@ -1,2 +1,2 @@
-require("remap")
 require("set")
+require("remap")
