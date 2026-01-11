@@ -1,0 +1,5 @@
+vim.lsp.enable("lua_ls")
+vim.lsp.enable("gopls")
+vim.lsp.enable("clangd")
+vim.lsp.enable("roslyn_ls")
+vim.lsp.enable("rust_analyzer")

@@ -12,3 +12,4 @@ vim.opt.incsearch = true
 vim.opt.scrolloff = 8
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+vim.diagnostic.enable = true
