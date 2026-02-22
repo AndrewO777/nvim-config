@@ -6,14 +6,51 @@ return {
     config = function()
         local dap = require("dap")
         -- Configure Delve (Go debugger)
-        dap.adapters.go = {
-            type = "server",
-            port = "${port}",
-            executable = {
-                command = "dlv",
-                args = { "dap", "-l", "127.0.0.1:${port}" },
-            },
+        dap.adapters.delve = function(callback, config)
+            if config.mode == 'remote' and config.request == 'attach' then
+                callback({
+                    type = 'server',
+                    host = config.host or '127.0.0.1',
+                    port = config.port or '38697'
+                })
+            else
+                callback({
+                    type = 'server',
+                    port = '${port}',
+                    executable = {
+                        command = 'dlv',
+                        args = { 'dap', '-l', '127.0.0.1:${port}', '--log', '--log-output=dap' },
+                        detached = vim.fn.has("win32") == 0,
+                    }
+                })
+            end
+        end
+
+        -- https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md
+        dap.configurations.go = {
+          {
+            type = "delve",
+            name = "Debug",
+            request = "launch",
+            program = "${file}"
+          },
+          {
+            type = "delve",
+            name = "Debug test", -- configuration for debugging test files
+            request = "launch",
+            mode = "test",
+            program = "${file}"
+          },
+          -- works with go.mod packages and sub packages 
+          {
+            type = "delve",
+            name = "Debug test (go.mod)",
+            request = "launch",
+            mode = "test",
+            program = "./${relativeFileDirname}"
+          }
         }
+
         -- C, C++, Rust
         dap.adapters.gdb = {
             type = "executable",
@@ -21,18 +58,6 @@ return {
             args = { "--interpreter=dap", "--eval-command", "set print pretty on" }
         }
 
-        dap.configurations.go = {
-            {
-                type = "go",
-                name = "Debug test",
-                program = "${file}",
-            },
-            {
-                type = "go",
-                name = "Debug package",
-                program = "${workspaceFolder}/**/*.go",
-            },
-        }
         dap.configurations.c = {
             {
                 name = "Launch",
