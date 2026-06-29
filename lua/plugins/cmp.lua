@@ -11,6 +11,12 @@ return {
 		local cmp = require("cmp")
         local lspkind = require("lspkind")
 		cmp.setup({
+            -- Expand LSP snippet completions using Neovim's built-in engine.
+            snippet = {
+                expand = function(args)
+                    vim.snippet.expand(args.body)
+                end,
+            },
             formatting = {
                 format = lspkind.cmp_format({
                     mode = "symbol-text",
