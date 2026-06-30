@@ -29,27 +29,11 @@ return {
             provider_options = {
                 openai_fim_compatible = {
                     -- Ollama ignores the key, but minuet requires a non-empty one.
-                    -- Return a literal dummy via a function so it works on every OS --
-                    -- an env-var name like "APPDATA" only exists on Windows and would
-                    -- leave minuet disabled on Linux/macOS.
+                    -- Return a literal dummy via a function so it works on every OS
                     api_key = function() return "ollama" end,
                     name = "Ollama",
                     end_point = "http://localhost:11434/v1/completions",
-                    -- Best FIM model per machine. Uncomment the line for the box you're
-                    -- on (and `ollama pull` it there first) -- keep only one active.
-                    --
-                    -- Sapphire Nitro+ 7900XTX 24GB: Codestral -- highest FIM accuracy of
-                    -- any local model (#1 on Copilot Arena), 22B / ~13GB fits easily.
-                    -- Fallback for snappier MoE latency over peak quality: qwen3-coder:30b.
-                    -- model = "codestral",
-                    -- GTX 1660 6GB: JetBrains Mellum -- 4B model built purely for code
-                    -- completion, fits 6GB. If FIM output looks off (template quirks via
-                    -- Ollama), fall back to qwen2.5-coder:3b.
-                    model = "qwen2.5-coder:1.5b",
-                    -- M5 MacBook Pro (16GB unified): qwen2.5-coder:7b -- light (~5GB),
-                    -- fast, FIM-specialized, and leaves headroom for the OS. (Codestral
-                    -- would only fit comfortably here with 32GB+ unified RAM.)
-                    -- model = "qwen2.5-coder:7b",
+                    model = "qwen2.5-coder:3b",
                     optional = {
                         max_tokens = 256,
                         top_p = 0.9,
