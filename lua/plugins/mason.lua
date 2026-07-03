@@ -1,6 +1,5 @@
 return {
     "mason-org/mason.nvim",
-    opts = {},
     config = function()
         require("mason").setup({
             registries = {
@@ -8,5 +7,13 @@ return {
                 "github:Crashdummyy/mason-registry",
             }
         })
+
+        local registry = require("mason-registry")
+        registry.refresh(function()
+            local pkg = registry.get_package("tree-sitter-cli")
+            if not pkg:is_installed() then
+                pkg:install()
+            end
+        end)
     end
 }
