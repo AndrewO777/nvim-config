@@ -20,7 +20,7 @@ return {
         adapters = {
             http = {
                 ollama = function()
-                    return require("codecompanion.adapters").extend("ollama", {
+                    local adapter = require("codecompanion.adapters").extend("ollama", {
                         -- Uses $OLLAMA_HOST if set, otherwise localhost:11434.
                         schema = {
                             model = { default = MODEL },
@@ -31,6 +31,18 @@ return {
                             keep_alive = { default = "10m" },
                         },
                     })
+
+                    -- Qwen's chat template only accepts a single system message, and
+                    -- only as the first message. CodeCompanion sends several (base
+                    -- prompt, tool groups like @{files}, rules), so merge them into
+                    -- one at the top before the request goes to Ollama.
+                    local form_messages = adapter.handlers.form_messages
+                    adapter.handlers.form_messages = function(self, messages)
+                        local utils = require("codecompanion.adapters.utils")
+                        return form_messages(self, utils.merge_system_messages(messages))
+                    end
+
+                    return adapter
                 end,
                 opts = {
                     -- Only list our Ollama adapter when switching with `ga`.
